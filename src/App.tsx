@@ -7,16 +7,16 @@ import { AnalyzerResult, DeveloperState } from "./types";
 import { Sparkles, HelpCircle, Moon, Sun, ArrowRight, UserPlus, UserMinus, RefreshCw } from "lucide-react";
 
 const LANGUAGE_COLORS: Record<string, string> = {
-  TypeScript: "#2f74c0",
+  TypeScript: "#3178c6",
   JavaScript: "#f7df1e",
-  C: "#5896dc",
-  Python: "#3572ab",
+  C: "#9c27b0",
+  Python: "#34a853",
   CSS: "#264de4",
   HTML: "#e34f26",
   Rust: "#dea584",
   Go: "#00add8",
-  Shell: "#89e051",
-  Ruby: "#701516",
+  Shell: "#44b700",
+  Ruby: "#cc342d",
   PHP: "#777bb4",
   Java: "#b07219",
   "C++": "#f34b7d",
@@ -208,6 +208,28 @@ export default function App() {
     }
   };
 
+  const isSelfComparison = (candidate: string) => {
+    const baseUsername = dev1.username.trim().toLowerCase();
+    return baseUsername && baseUsername === candidate.trim().toLowerCase();
+  };
+
+  const handleCompareFetch = () => {
+    const trimmed = input2.trim();
+    if (!trimmed) return;
+
+    if (isSelfComparison(trimmed)) {
+      setDev2({
+        username: trimmed,
+        isLoading: false,
+        error: "CANNOT COMPARE THE SAME USER TO THEMSELVES. ENTER A DIFFERENT USERNAME.",
+        data: null
+      });
+      return;
+    }
+
+    fetchDeveloperData(trimmed, setDev2);
+  };
+
   const handleApplyPreset = (key: string, selector: 1 | 2) => {
     const preset = PRESET_DEVELOPERS[key];
     if (selector === 1) {
@@ -296,13 +318,13 @@ export default function App() {
                     value={input2}
                     onChange={(e) => setInput2(e.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === "Enter") fetchDeveloperData(input2, setDev2);
+                      if (e.key === "Enter") handleCompareFetch();
                     }}
                     placeholder="COMPARE WITH USERNAME"
                     className="w-full bg-[var(--bg)] border border-[var(--border)] focus:border-zinc-500 focus:outline-none text-[var(--text)] px-4 py-3.5 font-bold transition-all duration-200 uppercase tracking-widest text-xs rounded-xl"
                   />
                   <button 
-                    onClick={() => fetchDeveloperData(input2, setDev2)}
+                    onClick={handleCompareFetch}
                     disabled={dev2.isLoading}
                     className="px-6 bg-zinc-800 hover:bg-zinc-700 disabled:bg-zinc-900 text-white font-bold uppercase text-xs tracking-[2px] rounded-xl transition-all duration-200 flex items-center gap-2 select-none shrink-0"
                   >
@@ -374,7 +396,7 @@ export default function App() {
                   <h3 className="font-extrabold text-red-500 tracking-wider text-xl uppercase mb-1">DATA FLOW PAUSED</h3>
                   <p className="text-zinc-500 font-bold uppercase text-[10px] tracking-widest mb-4">{dev2.error}</p>
                   <button 
-                    onClick={() => fetchDeveloperData(dev2.username, setDev2)}
+                    onClick={handleCompareFetch}
                     className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 text-xs font-[900] uppercase tracking-widest rounded-lg transition"
                   >
                     RETRY CONNECTION

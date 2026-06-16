@@ -477,7 +477,7 @@ export default function App() {
             POWERED BY PUBLIC API DATA
           </div>
           <div>
-            CREATED BY ARYAN RAJ
+            CREATED BY <a href="https://linkedin.com/in/aryan23" target="_blank" rel="noopener noreferrer" className="text-[var(--text)] hover:text-[var(--accent)]">ARYAN RAJ</a>
           </div>
         </footer>
 

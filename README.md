@@ -4,9 +4,11 @@
 DevLens is a professional GitHub profile analytics dashboard designed for developers to visualize their coding impact and contribution metrics.
 
 ## Features
-- Clean, responsive dashboard interface.
-- Real-time GitHub profile data analysis.
-- Modern typography and professional UI layout.
+* **Responsive Dashboard:** A clean, intuitive interface designed for a seamless experience on any device.
+* **Real-time Analytics:** Instant insights into GitHub profile metrics and contribution trends.
+* **Visual Data Mapping:** Interactive language breakdowns to help you visualize your tech stack evolution.
+* **Modern UI/UX:** A distraction-free, dark-mode-first layout built for professional presentation.
+* **Comparative Benchmarking:** Compare profile statistics side-by-side to track growth and coding velocity.
 
 ## How to run locally
 

@@ -401,7 +401,7 @@ export default function App() {
                   Activity
                 </button>
               </div>
-              <span className="text-xs text-[var(--text-muted)]">(Smart = composite of stars, forks, recent pushes)</span>
+              
             </div>
         </section>
 

@@ -26,6 +26,7 @@ const LANGUAGE_COLORS: Record<string, string> = {
 export default function App() {
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [isCompare, setIsCompare] = useState<boolean>(false);
+  const [repoSort, setRepoSort] = useState<"composite" | "popularity" | "activity">("composite");
 
   // Developer States
   const [dev1, setDev1] = useState<DeveloperState>({
@@ -91,8 +92,8 @@ export default function App() {
       }
       const user = await userRes.json();
 
-      // Fetch Repository list
-      const reposRes = await fetch(`https://api.github.com/users/${trimmed}/repos?per_page=100&sort=stars`);
+      // Fetch Repository list (fetch many and sort client-side according to selected method)
+      const reposRes = await fetch(`https://api.github.com/users/${trimmed}/repos?per_page=100`);
       if (!reposRes.ok) {
         throw new Error("UNABLE TO LOCATE REPOSITORIES");
       }
@@ -102,7 +103,7 @@ export default function App() {
       const starsCount = (repos || []).reduce((sum: number, r: any) => sum + (r.stargazers_count || 0), 0);
       const score = starsCount * 2 + user.public_repos * 5 + user.followers * 10;
 
-      // Classicate top programming language
+      // Classify top programming language
       const langs: Record<string, number> = {};
       (repos || []).forEach((r: any) => {
         if (r.language) {
@@ -141,6 +142,28 @@ export default function App() {
         };
       });
 
+      // Compute per-repo composite/activity scores to choose top repos
+      const now = Date.now();
+      const scoredRepos = (repos || []).map((r: any) => {
+        const stars = r.stargazers_count || 0;
+        const forks = r.forks_count || 0;
+        const pushedAt = r.pushed_at ? new Date(r.pushed_at).getTime() : 0;
+        const daysSince = pushedAt ? (now - pushedAt) / (1000 * 60 * 60 * 24) : Infinity;
+        const recencyScore = Math.max(0, 1 - daysSince / 365); // 1 for very recent, 0 after a year
+        const composite = (stars * 0.4) + (forks * 0.4) + (recencyScore * 100 * 0.2); // scale recency to 0-100
+        return { ...r, _composite: composite, _pushedAt: pushedAt };
+      });
+
+      // Sort according to current repoSort selection
+      let sortedRepos: any[] = [];
+      if (repoSort === "popularity") {
+        sortedRepos = scoredRepos.sort((a, b) => (b.stargazers_count || 0) - (a.stargazers_count || 0));
+      } else if (repoSort === "activity") {
+        sortedRepos = scoredRepos.sort((a, b) => (b._pushedAt || 0) - (a._pushedAt || 0));
+      } else {
+        sortedRepos = scoredRepos.sort((a, b) => (b._composite || 0) - (a._composite || 0));
+      }
+
       // Generate visual badges and custom rating descriptors
       let rank = "Apprentice";
       let summary = `JUST STARTING OUT IN ${topLanguage ? topLanguage.toUpperCase() : "DEV"}, FOCUSING ON FRONTEND AND BASICS.`;
@@ -159,7 +182,7 @@ export default function App() {
       }
 
       // Format parsed repositories
-      const structuredRepos = (repos || []).slice(0, 3).map((r: any) => ({
+      const structuredRepos = (sortedRepos || []).slice(0, 3).map((r: any) => ({
         id: r.id,
         name: r.name,
         html_url: r.html_url,
@@ -216,6 +239,8 @@ export default function App() {
   const handleCompareFetch = () => {
     const trimmed = input2.trim();
     if (!trimmed) return;
+    // clear previous error and show loading immediately
+    setDev2((prev) => ({ ...prev, username: trimmed, isLoading: true, error: null }));
 
     if (isSelfComparison(trimmed)) {
       setDev2({
@@ -343,7 +368,7 @@ export default function App() {
 
           </div>
 
-          {isCompare && (
+            {isCompare && (
             <div className="mt-6 flex justify-end">
               <button 
                 onClick={() => setIsCompare(false)}
@@ -353,6 +378,26 @@ export default function App() {
               </button>
             </div>
           )}
+
+            {/* Repo sort toggle: Composite (smart), Popularity (stars), Activity (last pushed) */}
+            <div className="mt-4 flex items-center gap-3">
+              <span className="text-[10px] font-bold tracking-[2px] uppercase text-[var(--text-muted)]">Repo View:</span>
+              <div className="inline-flex rounded-lg overflow-hidden border border-[var(--border)]">
+                <button onClick={() => { setRepoSort("composite"); if (dev1.username) fetchDeveloperData(dev1.username, setDev1); if (isCompare && dev2.username) fetchDeveloperData(dev2.username, setDev2); }}
+                  className={`px-3 py-1 text-xs font-bold ${repoSort === "composite" ? "bg-[var(--surface-alt)]" : "bg-[var(--surface)]"}`}>
+                  Smart
+                </button>
+                <button onClick={() => { setRepoSort("popularity"); if (dev1.username) fetchDeveloperData(dev1.username, setDev1); if (isCompare && dev2.username) fetchDeveloperData(dev2.username, setDev2); }}
+                  className={`px-3 py-1 text-xs font-bold ${repoSort === "popularity" ? "bg-[var(--surface-alt)]" : "bg-[var(--surface)]"}`}>
+                  Popularity
+                </button>
+                <button onClick={() => { setRepoSort("activity"); if (dev1.username) fetchDeveloperData(dev1.username, setDev1); if (isCompare && dev2.username) fetchDeveloperData(dev2.username, setDev2); }}
+                  className={`px-3 py-1 text-xs font-bold ${repoSort === "activity" ? "bg-[var(--surface-alt)]" : "bg-[var(--surface)]"}`}>
+                  Activity
+                </button>
+              </div>
+              <span className="text-xs text-[var(--text-muted)]">(Smart = composite of stars, forks, recent pushes)</span>
+            </div>
         </section>
 
         {/* PRIMARY DASHBOARD LAYOUT GRID */}

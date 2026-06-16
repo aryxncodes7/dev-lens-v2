@@ -213,7 +213,18 @@ export function DeveloperCard({ data, id }: DeveloperCardProps) {
               >
                 <div className="flex items-center gap-2.5 min-w-0 pr-3">
                   <BookMarked className="w-4 h-4 text-zinc-500 shrink-0" />
-                  <span className="font-bold text-sm tracking-tight truncate uppercase">{repo.name}</span>
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className="font-bold text-sm tracking-tight truncate uppercase">{repo.name}</span>
+                    {repo.language && (
+                      <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase text-[var(--text-muted)]">
+                        <span
+                          className="w-2 h-2 rounded-full shrink-0"
+                          style={{ backgroundColor: (languageStats.find(s => s.language === repo.language)?.color) || "#9ca3af" }}
+                        />
+                        <span className="truncate">{repo.language}</span>
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <div className="flex items-center gap-1 shrink-0 px-2 py-0.5 rounded text-xs text-[var(--text-muted)] font-black">
                   <Star className="w-3.5 h-3.5 text-zinc-500" />

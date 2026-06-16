@@ -79,8 +79,13 @@ export default function App() {
     }
 
     try {
+      // Use token from environment if provided to increase GitHub API rate limits
+      const token = import.meta.env.VITE_GITHUB_TOKEN as string | undefined;
+      const authHeaders: Record<string, string> = token
+        ? { Authorization: `token ${token}` }
+        : {};
       // Fetch GitHub User details
-      const userRes = await fetch(`https://api.github.com/users/${trimmed}`);
+      const userRes = await fetch(`https://api.github.com/users/${trimmed}`, { headers: authHeaders });
       if (!userRes.ok) {
         if (userRes.status === 404) {
           throw new Error("GITHUB USER NOT FOUND");
@@ -93,7 +98,7 @@ export default function App() {
       const user = await userRes.json();
 
       // Fetch Repository list (fetch many and sort client-side according to selected method)
-      const reposRes = await fetch(`https://api.github.com/users/${trimmed}/repos?per_page=100`);
+      const reposRes = await fetch(`https://api.github.com/users/${trimmed}/repos?per_page=100`, { headers: authHeaders });
       if (!reposRes.ok) {
         throw new Error("UNABLE TO LOCATE REPOSITORIES");
       }

@@ -1,5 +1,6 @@
 # DevLens
 
+[View Live Demo](https://devlens-821820870556.asia-southeast1.run.app/)
 DevLens is a professional GitHub profile analytics dashboard designed for developers to visualize their coding impact and contribution metrics.
 
 ## Features

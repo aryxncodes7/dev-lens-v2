@@ -1,20 +1,22 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# DevLens
 
-# Run and deploy your AI Studio app
+DevLens is a professional GitHub profile analytics dashboard designed for developers to visualize their coding impact and contribution metrics.
 
-This contains everything you need to run your app locally.
+## Features
+- Clean, responsive dashboard interface.
+- Real-time GitHub profile data analysis.
+- Modern typography and professional UI layout.
 
-View your app in AI Studio: https://ai.studio/apps/1ad98424-999d-42d4-bef6-eb0a18b3d0d1
+## How to run locally
 
-## Run Locally
+1. Clone this repository:
+```bash
+git clone https://github.com/aryxncodes7/dev-lens-v2.git
+Install dependencies:
 
-**Prerequisites:**  Node.js
+Bash
+npm install
+Run the development server:
 
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+Bash
+npm run dev

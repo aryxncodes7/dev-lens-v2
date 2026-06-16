@@ -6,6 +6,23 @@ import { PRESET_DEVELOPERS } from "./presets";
 import { AnalyzerResult, DeveloperState } from "./types";
 import { Sparkles, HelpCircle, Moon, Sun, ArrowRight, UserPlus, UserMinus, RefreshCw } from "lucide-react";
 
+const LANGUAGE_COLORS: Record<string, string> = {
+  TypeScript: "#2f74c0",
+  JavaScript: "#f7df1e",
+  C: "#5896dc",
+  Python: "#3572ab",
+  CSS: "#264de4",
+  HTML: "#e34f26",
+  Rust: "#dea584",
+  Go: "#00add8",
+  Shell: "#89e051",
+  Ruby: "#701516",
+  PHP: "#777bb4",
+  Java: "#b07219",
+  "C++": "#f34b7d",
+  Other: "#6b7280"
+};
+
 export default function App() {
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [isCompare, setIsCompare] = useState<boolean>(false);
@@ -95,6 +112,35 @@ export default function App() {
       const topLanguage = Object.keys(langs).reduce((a, b) => (langs[a] > langs[b] ? a : b), "N/A");
       const memberSince = new Date(user.created_at).getFullYear();
 
+      const languageCounts: Record<string, number> = {};
+      let languageTotal = 0;
+      (repos || []).forEach((r: any) => {
+        if (r.language) {
+          languageCounts[r.language] = (languageCounts[r.language] || 0) + 1;
+          languageTotal += 1;
+        }
+      });
+
+      const languageEntries = Object.entries(languageCounts).sort(([, a], [, b]) => b - a);
+      const languageGroups = languageEntries.length > 5
+        ? [...languageEntries.slice(0, 4), ["Other", languageEntries.slice(4).reduce((sum, [, count]) => sum + count, 0)]]
+        : languageEntries;
+
+      let percentSum = 0;
+      const languageStats = languageGroups.map(([language, count], index) => {
+        const percentage = index === languageGroups.length - 1
+          ? Math.max(0, 100 - percentSum)
+          : Math.round((count / languageTotal) * 100);
+
+        percentSum += percentage;
+        return {
+          language,
+          count,
+          percentage,
+          color: LANGUAGE_COLORS[language] ?? LANGUAGE_COLORS.Other
+        };
+      });
+
       // Generate visual badges and custom rating descriptors
       let rank = "Apprentice";
       let summary = `JUST STARTING OUT IN ${topLanguage ? topLanguage.toUpperCase() : "DEV"}, FOCUSING ON FRONTEND AND BASICS.`;
@@ -140,6 +186,7 @@ export default function App() {
         starsCount,
         score,
         topLanguage,
+        languageStats,
         memberSince,
         rank,
         summary
@@ -193,9 +240,11 @@ export default function App() {
         {/* HEADER BRANDING */}
         <header className="flex justify-between items-end mb-12 border-b border-[var(--border)] pb-8">
           <div className="flex flex-col">
-            <h1 className="text-5xl sm:text-6xl md:text-7xl font-black tracking-[-3px] sm:tracking-[-4px] leading-[0.8] uppercase select-none">
-              DEV<span className="text-[var(--accent)]">LENS</span>
-            </h1>
+            <a href="/" className="inline-block no-underline">
+              <h1 className="text-5xl sm:text-6xl md:text-7xl font-black tracking-[-3px] sm:tracking-[-4px] leading-[0.8] uppercase select-none">
+                DEV<span className="text-[var(--accent)]">LENS</span>
+              </h1>
+            </a>
             <p className="text-[10px] font-bold tracking-[3px] text-[var(--text-muted)] uppercase mt-4">
               GitHub Profile Analyzer
             </p>

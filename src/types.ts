@@ -21,12 +21,20 @@ export interface GithubRepository {
   description: string | null;
 }
 
+export interface LanguageStat {
+  language: string;
+  count: number;
+  percentage: number;
+  color: string;
+}
+
 export interface AnalyzerResult {
   user: GithubUser;
   repos: GithubRepository[];
   starsCount: number;
   score: number;
   topLanguage: string;
+  languageStats: LanguageStat[];
   memberSince: number;
   rank: string;
   summary: string;

@@ -12,7 +12,19 @@ interface DeveloperCardProps {
 }
 
 export function DeveloperCard({ data, id }: DeveloperCardProps) {
-  const { user, repos, starsCount, topLanguage, memberSince, rank, summary } = data;
+  const { user, repos, starsCount, topLanguage, memberSince, rank, summary, languageStats } = data;
+  const chartSize = 132;
+  const strokeWidth = 16;
+  const radius = (chartSize - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+
+  let cumulativeOffset = 0;
+  const donutSegments = languageStats.map((stat) => {
+    const length = (stat.percentage / 100) * circumference;
+    const offset = circumference - cumulativeOffset;
+    cumulativeOffset += length;
+    return { ...stat, length, offset };
+  });
 
   // Extract first name for main headline, full name for badge
   const fullName = (user.name || user.login).trim();
@@ -121,6 +133,56 @@ export function DeveloperCard({ data, id }: DeveloperCardProps) {
             </span>
           </div>
         </div>
+      </div>
+
+      {/* Language Distribution */}
+      <div className="mb-10">
+        <span className="text-[9px] font-bold tracking-[2.5px] text-[var(--text-muted)] uppercase mb-5 block select-none">
+          LANGUAGE DISTRIBUTION
+        </span>
+        {languageStats.length > 0 ? (
+          <div className="grid grid-cols-1 lg:grid-cols-[auto,1fr] gap-6 items-center">
+            <div className="flex items-center justify-center">
+              <div className="relative w-36 h-36">
+                <svg viewBox="0 0 132 132" className="w-full h-full">
+                  <circle cx="66" cy="66" r={radius} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={strokeWidth} />
+                  {donutSegments.map((segment) => (
+                    <circle
+                      key={segment.language}
+                      cx="66"
+                      cy="66"
+                      r={radius}
+                      fill="none"
+                      stroke={segment.color}
+                      strokeWidth={strokeWidth}
+                      strokeDasharray={`${segment.length} ${circumference}`}
+                      strokeDashoffset={segment.offset}
+                      strokeLinecap="round"
+                      transform="rotate(-90 66 66)"
+                    />
+                  ))}
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                  <span className="text-[10px] uppercase tracking-[2px] text-[var(--text-muted)]">TOP</span>
+                  <span className="mt-1 text-sm font-black uppercase tracking-[1px] text-[var(--text)]">{topLanguage === "N/A" ? "N/A" : topLanguage}</span>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-3">
+              {languageStats.map((stat) => (
+                <div key={stat.language} className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className="w-3.5 h-3.5 rounded-full shrink-0" style={{ backgroundColor: stat.color }} />
+                    <span className="truncate font-bold text-xs uppercase tracking-[1px] text-[var(--text)]">{stat.language}</span>
+                  </div>
+                  <span className="text-xs font-semibold uppercase text-[var(--text-muted)]">{stat.percentage}%</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <p className="text-sm text-[var(--text-muted)] italic">No repository language data available yet.</p>
+        )}
       </div>
 
       {/* Top Repositories */}

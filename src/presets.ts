@@ -46,6 +46,9 @@ export const PRESET_DEVELOPERS: Record<string, AnalyzerResult> = {
     starsCount: 178250,
     score: (178250 * 2) + (7 * 5) + (215000 * 10),
     topLanguage: "C",
+    languageStats: [
+      { language: "C", count: 3, percentage: 100, color: "#5896dc" }
+    ],
     memberSince: 2011,
     rank: "Master Elite",
     summary: "Master Elite: A heavyweight C contributor recognized by the global community."
@@ -95,6 +98,10 @@ export const PRESET_DEVELOPERS: Record<string, AnalyzerResult> = {
     starsCount: 93800,
     score: (93800 * 2) + (260 * 5) + (88000 * 10),
     topLanguage: "JavaScript",
+    languageStats: [
+      { language: "JavaScript", count: 2, percentage: 67, color: "#f7df1e" },
+      { language: "TypeScript", count: 1, percentage: 33, color: "#2f74c0" }
+    ],
     memberSince: 2011,
     rank: "Master Elite",
     summary: "Master Elite: A heavyweight JavaScript contributor recognized by the community."
@@ -144,6 +151,10 @@ export const PRESET_DEVELOPERS: Record<string, AnalyzerResult> = {
     starsCount: 302300,
     score: (302300 * 2) + (184 * 5) + (104000 * 10),
     topLanguage: "TypeScript",
+    languageStats: [
+      { language: "TypeScript", count: 2, percentage: 67, color: "#2f74c0" },
+      { language: "JavaScript", count: 1, percentage: 33, color: "#f7df1e" }
+    ],
     memberSince: 2010,
     rank: "Master Elite",
     summary: "Master Elite: A heavyweight TypeScript contributor recognized by the community."

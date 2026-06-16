@@ -13,15 +13,26 @@ interface DeveloperCardProps {
 
 export function DeveloperCard({ data, id }: DeveloperCardProps) {
   const { user, repos, starsCount, topLanguage, memberSince, rank, summary, languageStats } = data;
+  // Determine active language from the top 3 repositories (most common language)
+  const topThreeLangs = repos.slice(0, 3).map((r) => r.language).filter(Boolean);
+  let activeLanguage: string | null = null;
+  if (topThreeLangs.length > 0) {
+    const counts = topThreeLangs.reduce((acc: Record<string, number>, l: string) => {
+      acc[l] = (acc[l] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    activeLanguage = Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
+  }
   const chartSize = 132;
   const strokeWidth = 16;
   const radius = (chartSize - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
 
+  const totalLanguageCount = languageStats.reduce((sum, stat) => sum + stat.count, 0) || 1;
   let cumulativeOffset = 0;
   const donutSegments = languageStats.map((stat) => {
-    const length = (stat.percentage / 100) * circumference;
-    const offset = circumference - cumulativeOffset;
+    const length = (stat.count / totalLanguageCount) * circumference;
+    const offset = cumulativeOffset;
     cumulativeOffset += length;
     return { ...stat, length, offset };
   });
@@ -155,9 +166,9 @@ export function DeveloperCard({ data, id }: DeveloperCardProps) {
                       fill="none"
                       stroke={segment.color}
                       strokeWidth={strokeWidth}
-                      strokeDasharray={`${segment.length} ${circumference}`}
-                      strokeDashoffset={segment.offset}
-                      strokeLinecap="round"
+                      strokeDasharray={`${segment.length} ${circumference - segment.length}`}
+                      strokeDashoffset={circumference - segment.offset}
+                      strokeLinecap="butt"
                       transform="rotate(-90 66 66)"
                     />
                   ))}
@@ -224,12 +235,9 @@ export function DeveloperCard({ data, id }: DeveloperCardProps) {
           ENVIRONMENT METRICS
         </span>
         <div className="flex gap-2.5 flex-wrap">
-          <div className="px-3.5 py-2 border border-[var(--border)] text-[10px] font-bold rounded-lg uppercase tracking-wider text-[var(--text)] bg-[var(--surface-alt)] select-none">
-            🎨 LANGUAGE: {topLanguage.toUpperCase()}
-          </div>
-          {repos[0]?.language && (
+          {activeLanguage && (
             <div className="px-3.5 py-2 border border-[var(--border)] text-[10px] font-bold rounded-lg uppercase tracking-wider text-[var(--text)] bg-[var(--surface-alt)] select-none">
-              🚀 ACTIVE IN {repos[0].language.toUpperCase()}
+              🚀 ACTIVE IN {activeLanguage.toUpperCase()}
             </div>
           )}
           <div className="px-3.5 py-2 border border-[var(--border)] text-[10px] font-bold rounded-lg uppercase tracking-wider text-[var(--text)] bg-[var(--surface-alt)] select-none">

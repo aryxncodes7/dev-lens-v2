@@ -14,8 +14,10 @@ interface DeveloperCardProps {
 export function DeveloperCard({ data, id }: DeveloperCardProps) {
   const { user, repos, starsCount, topLanguage, memberSince, rank, summary } = data;
 
-  // We split or clean up the name to handle the "FIRST LAST" huge uppercase layout elegantly.
-  const displayName = (user.name || user.login).trim().toUpperCase();
+  // Extract first name for main headline, full name for badge
+  const fullName = (user.name || user.login).trim();
+  const firstName = fullName.split(" ")[0].toUpperCase();
+  const displayName = firstName;
 
   return (
     <motion.div
@@ -42,14 +44,19 @@ export function DeveloperCard({ data, id }: DeveloperCardProps) {
             <h2 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-[-1.5px] sm:tracking-[-2px] uppercase leading-[0.95] text-[var(--text)] name">
               {displayName}
             </h2>
-            <a 
-              href={user.html_url} 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="text-[var(--text-muted)] hover:text-[var(--text)] font-semibold text-xs uppercase tracking-widest inline-flex items-center gap-1.5 mt-3.5 transition duration-200 border-b border-transparent hover:border-current"
-            >
-              @{user.login.toUpperCase()} <ArrowUpRight className="w-3.5 h-3.5" />
-            </a>
+            <div className="flex items-center gap-3 flex-wrap mt-3.5">
+              <a 
+                href={user.html_url} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-[var(--text-muted)] hover:text-[var(--text)] font-semibold text-xs uppercase tracking-widest inline-flex items-center gap-1.5 transition duration-200 border-b border-transparent hover:border-current"
+              >
+                @{user.login.toUpperCase()} <ArrowUpRight className="w-3.5 h-3.5" />
+              </a>
+              <span className="px-3 py-1.5 border border-[var(--border)] text-[10px] font-bold rounded-full uppercase tracking-wider text-[var(--text)] bg-[var(--surface-alt)] select-none">
+                {fullName}
+              </span>
+            </div>
             <p className="text-sm md:text-base text-[var(--text-muted)] mt-5 leading-relaxed font-light italic">
               {user.bio || "No custom status bio registered on GitHub."}
             </p>
@@ -158,14 +165,14 @@ export function DeveloperCard({ data, id }: DeveloperCardProps) {
           <div className="px-3.5 py-2 border border-[var(--border)] text-[10px] font-bold rounded-lg uppercase tracking-wider text-[var(--text)] bg-[var(--surface-alt)] select-none">
             🎨 LANGUAGE: {topLanguage.toUpperCase()}
           </div>
-          <div className="px-3.5 py-2 border border-[var(--border)] text-[10px] font-bold rounded-lg uppercase tracking-wider text-[var(--text)] bg-[var(--surface-alt)] select-none">
-            📅 MEMBER: SINCE {memberSince}
-          </div>
           {repos[0]?.language && (
             <div className="px-3.5 py-2 border border-[var(--border)] text-[10px] font-bold rounded-lg uppercase tracking-wider text-[var(--text)] bg-[var(--surface-alt)] select-none">
               🚀 ACTIVE IN {repos[0].language.toUpperCase()}
             </div>
           )}
+          <div className="px-3.5 py-2 border border-[var(--border)] text-[10px] font-bold rounded-lg uppercase tracking-wider text-[var(--text)] bg-[var(--surface-alt)] select-none">
+            📅 MEMBER: SINCE {memberSince}
+          </div>
         </div>
       </div>
     </motion.div>

@@ -308,7 +308,7 @@ export default function App() {
             ) : (
               <div className="border border-dashed border-[var(--border)] rounded-2xl p-10 text-center flex items-center justify-center min-h-[400px]">
                 <p className="text-[var(--text-muted)] font-medium text-sm tracking-wide">
-                  Enter a GitHub username above to search and analyze.
+                  Start exploring - Enter a GitHub username to discover their development profile.
                 </p>
               </div>
             )}
@@ -336,7 +336,7 @@ export default function App() {
               ) : (
                 <div className="border border-dashed border-[var(--border)] rounded-2xl p-10 text-center flex items-center justify-center min-h-[400px]">
                   <p className="text-[var(--text-muted)] font-medium text-sm tracking-wide">
-                    Enter another username above to compare with the first profile.
+                    Add another developer name to compare their profiles side-by-side.
                   </p>
                 </div>
               )}

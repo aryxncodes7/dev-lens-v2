@@ -13,16 +13,14 @@ DevLens is a professional GitHub profile analytics dashboard designed for develo
 ## How to run locally
 
 1. Clone this repository:
-```bash
+```
 git clone https://github.com/aryxncodes7/dev-lens-v2.git
 ```
 Install dependencies:
 ```
-Bash
 npm install
 ```
 Run the development server:
 ```
-Bash
 npm run dev
 ```
